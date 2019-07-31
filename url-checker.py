@@ -6,6 +6,7 @@ import re
 import PyRSS2Gen
 import datetime
 import yaml
+import Levenshtein
 
 def slugify(value):
     """
@@ -45,7 +46,9 @@ if __name__ == "__main__":
         except FileNotFoundError:
             old_contents = ""
 
-        if (old_contents != contents):
+        similarity = Levenshtein.ratio(old_contents, contents)
+        #print("url: {}, ratio: {}".format(url, str(similarity)))
+        if (similarity < 0.99):
             with open(cache_path / "{}.txt".format(slugify(url)), "w") as f:
                 #f.seek(0)
                 f.write(contents)
