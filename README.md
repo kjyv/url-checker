@@ -1,9 +1,9 @@
 # url-checker
-Simple script to check for modifications of URLs and output RSS of updated urls.
+Simple script to check for modifications of specified URLs. If some are different, it
+outputs a new RSS entry with updated urls (no history).
+It is intended to run as a CGI script which can then be polled from your RSS reader.
 
-needs python3, python3-html2text, python3-PyRSS2Gen, python3-yaml
+Needs python3 and modules html2text, PyRSS2Gen, yaml, diff_merge_patch
 
-Intended to run as CGI script and can be called from RSS reader.
-
-Set URLs to monitor in ~/.url-checker.yaml
+Set URLs to monitor in ~/.url-checker.yaml (containing one list called 'urls').
 Cached URL content is saved to ~/.cache/url-checker/
