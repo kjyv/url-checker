@@ -6,7 +6,8 @@ import re
 import PyRSS2Gen
 import datetime
 import yaml
-import Levenshtein
+#import Levenshtein
+from diff_match_patch import diff_match_patch
 
 def slugify(value):
     """
@@ -18,6 +19,18 @@ def slugify(value):
     value = unicodedata.normalize('NFKC', value)
     value = re.sub(r'[^\w\s-]', '', value).strip().lower()
     return re.sub(r'[-\s]+', '-', value)
+
+def compute_similarity_and_diff(text1, text2):
+    dmp = diff_match_patch()
+    dmp.Diff_Timeout = 0.0
+    diff = dmp.diff_main(text1, text2, False)
+
+    # similarity
+    common_text = sum([len(txt) for op, txt in diff if op == 0])
+    text_length = max(len(text1), len(text2))
+    sim = common_text / text_length
+
+    return sim, diff
 
 if __name__ == "__main__":
     from pathlib import Path
@@ -37,8 +50,10 @@ if __name__ == "__main__":
 
     updated_urls = []
     for url in config['urls']:
+        #print("get {} ...".format(url), flush=True)
         contents = html2text.html2text(str(urllib.request.urlopen(url).read()))
 
+        #print("read cache for {} ...".format(url), flush=True)
         try:
             with open(cache_path / "{}.txt".format(slugify(url)), "r") as f:
                 old_contents = f.read()
@@ -46,8 +61,15 @@ if __name__ == "__main__":
         except FileNotFoundError:
             old_contents = ""
 
-        similarity = Levenshtein.ratio(old_contents, contents)
-        #print("url: {}, ratio: {}".format(url, str(similarity)))
+        #print("compare with cache, similarity...", flush=True)
+        #https://stackoverflow.com/questions/17388213/find-the-similarity-metric-between-two-strings/50102520#50102520
+        #similarity = Levenshtein.ratio(old_contents, contents)
+
+        #Levenshtein is too slow for larger websites
+        similarity, diff = compute_similarity_and_diff(old_contents, contents)
+
+        #print("url: {}, ratio: {}".format(url, str(similarity)), flush=True)
+
         if (similarity < 0.99):
             with open(cache_path / "{}.txt".format(slugify(url)), "w") as f:
                 #f.seek(0)
