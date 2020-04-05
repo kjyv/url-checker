@@ -64,7 +64,11 @@ if __name__ == "__main__":
             except SelectorError:
                 print('Invalid selector.')
 
-            contents = [etree.tostring(e, method="text", encoding='unicode') for e in parsed.xpath(expression)][0]
+            contents = [etree.tostring(e, method="text", encoding='unicode') for e in parsed.xpath(expression)]
+            if (len(contents) > 0):
+                contents = contents[0]
+            else:
+                contents = "nothing selected"
         else:
             #no css selector given, simply convert html to text
             contents = html2text.html2text(html)
