@@ -9,6 +9,9 @@ import yaml
 #import Levenshtein
 from diff_match_patch import diff_match_patch
 
+from lxml import etree
+from cssselect import GenericTranslator, SelectorError
+
 def slugify(value):
     """
     (from Django)
@@ -49,9 +52,22 @@ if __name__ == "__main__":
        os.makedirs(cache_path)
 
     updated_urls = []
-    for url in config['urls']:
+    for url, selector in config['urls']:
         #print("get {} ...".format(url), flush=True)
-        contents = html2text.html2text(str(urllib.request.urlopen(url).read()))
+        html = str(urllib.request.urlopen(url).read())
+
+        if selector != "":
+            #css selecto given, parse html and extract subtree
+            parsed = etree.HTML(html)
+            try:
+                expression = GenericTranslator().css_to_xpath(selector)
+            except SelectorError:
+                print('Invalid selector.')
+
+            contents = [etree.tostring(e, method="text", encoding='unicode') for e in parsed.xpath(expression)][0]
+        else:
+            #no css selector given, simply convert html to text
+            contents = html2text.html2text(html)
 
         #print("read cache for {} ...".format(url), flush=True)
         try:
@@ -109,4 +125,4 @@ if __name__ == "__main__":
             print("Content-Type: text/xml; charset=utf-8\n")
             print(str(contents))
             f.close()
-       
+
