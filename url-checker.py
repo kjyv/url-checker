@@ -43,7 +43,7 @@ if __name__ == "__main__":
 
     with open(home / '.url-checker.yaml', 'r') as stream:
         try:
-            config = yaml.load(stream)
+            config = yaml.safe_load(stream)
         except yaml.YAMLError as exc:
             print(exc)
 
@@ -96,8 +96,11 @@ if __name__ == "__main__":
                 f.write(contents)
                 #f.truncate()
 
-                #print("url {} changed".format(url))
+        #        print("url {} changed".format(url))
                 updated_urls.append(url)
+        #else:
+        #    print("url {} similar {}".format(url, similarity))
+
 
     updated_html = ""
     for url in updated_urls:
