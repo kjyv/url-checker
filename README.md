@@ -7,5 +7,12 @@ Needs python3 and the following modules:
 html2text, PyRSS2Gen, pyyaml, diff-match-patch, lxml, cssselect
 (e.g. `apt install python3-html2text python3-pyrss2gen python3-yaml python3-diff-match-patch python3-lxml python3-cssselect`)
 
-Set URLs to monitor in ~/.url-checker.yaml (containing one yaml list called 'urls').
+Create a file at ~/.url-checker.yaml with a list of URLs to be monitored like this:
+```
+urls:
+        - ['https://domain.tld', '']
+        - ['https://domain2.tld', '']
+```
+The second parameter on each line is an optional css selector to select a subset of the page for monitoring.
+
 Cached URL content is saved to ~/.cache/url-checker/
