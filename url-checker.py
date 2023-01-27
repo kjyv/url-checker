@@ -97,8 +97,8 @@ if __name__ == "__main__":
                 #f.truncate()
 
                 print("url {} changed (similarity is {})".format(url, similarity))
-                url = link if link is not None and link is not ''
-                    updated_urls.append(url)
+                url = link if link is not None and link != '' else url
+                updated_urls.append(url)
         else:
             print("url {} is the same or very similar to previous version ({})".format(url, similarity))
 
