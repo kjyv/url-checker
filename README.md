@@ -11,7 +11,7 @@ Create a file at ~/.url-checker.yaml with a list of URLs to be checked for diffe
 ```
 urls:
         - ['https://domain.tld/updates.json', '', "https://domain.tld/releases"]
-        - ['https://domain2.tld', '']
+        - ['https://domain2.tld', '', '']
 ```
 The second parameter on each line is an optional css selector to select a subset of the page for monitoring.
 The third parameter is an optional alternative link to put into the output feed instead of the first url.
