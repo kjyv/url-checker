@@ -52,12 +52,12 @@ if __name__ == "__main__":
        os.makedirs(cache_path)
 
     updated_urls = []
-    for url, selector in config['urls']:
+    for url, selector, link in config['urls']:
         #print("get {} ...".format(url), flush=True)
         html = str(urllib.request.urlopen(url).read())
 
         if selector != "":
-            #css selecto given, parse html and extract subtree
+            #css selector given, parse html and extract subtree
             parsed = etree.HTML(html)
             try:
                 expression = GenericTranslator().css_to_xpath(selector)
@@ -88,7 +88,7 @@ if __name__ == "__main__":
         #Levenshtein is too slow for larger websites
         similarity, diff = compute_similarity_and_diff(old_contents, contents)
 
-        #print("url: {}, ratio: {}".format(url, str(similarity)), flush=True)
+        #print("url {} has similarity {} to previous version".format(url, str(similarity)), flush=True)
 
         if (similarity < 0.99):
             with open(cache_path / "{}.txt".format(slugify(url)), "w") as f:
@@ -96,8 +96,11 @@ if __name__ == "__main__":
                 f.write(contents)
                 #f.truncate()
 
-                #print("url {} changed".format(url))
-                updated_urls.append(url)
+                print("url {} changed (similarity is {})".format(url, similarity))
+                url = link if link is not None and link is not ''
+                    updated_urls.append(url)
+        else:
+            print("url {} is the same or very similar to previous version ({})".format(url, similarity))
 
     updated_html = ""
     for url in updated_urls:
